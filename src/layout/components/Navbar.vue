@@ -18,6 +18,7 @@
           <img
             :src="$store.state.user.userInfo.staffPhoto"
             class="user-avatar"
+            v-imgError="defaultImg"
           />
           <span>{{ $store.state.user.userInfo.username }}</span>
           <i class="el-icon-caret-bottom" />
@@ -41,6 +42,12 @@ import Breadcrumb from '@/components/Breadcrumb'
 import Hamburger from '@/components/Hamburger'
 
 export default {
+  data() {
+    return {
+      defaultImg:
+        'https://gimg2.baidu.com/image_search/src=http%3A%2F%2Flmg.jj20.com%2Fup%2Fallimg%2Ftx23%2F24041902029808.jpg&refer=http%3A%2F%2Flmg.jj20.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=auto?sec=1662083723&t=fe7eac710253614f53c936a870054646'
+    }
+  },
   components: {
     Breadcrumb,
     Hamburger
