@@ -16,7 +16,9 @@
 </template>
 
 <script>
+import { getDeptsApi } from '@/api/departments'
 import treeTools from './components/treeTools.vue'
+import { transListToTree } from '@/utils'
 export default {
   data() {
     return {
@@ -32,9 +34,16 @@ export default {
     }
   },
 
-  created() {},
+  created() {
+    this.getDeptsApi()
+  },
 
-  methods: {},
+  methods: {
+    async getDeptsApi() {
+      const res = await getDeptsApi()
+      this.treeData = transListToTree(res.depts, '')
+    }
+  },
   components: {
     treeTools
   }
