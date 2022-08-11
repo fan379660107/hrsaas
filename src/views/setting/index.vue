@@ -30,7 +30,32 @@
           >
           </el-pagination>
         </el-tab-pane>
-        <el-tab-pane label="公司信息" name="second">配置管理</el-tab-pane>
+        <el-tab-pane label="公司信息" name="second">
+          <el-alert
+            title="对公司名称、公司地址、营业执照、公司地区的更新，将使得公司资料被重新审核，请谨慎修改"
+            type="info"
+            show-icon
+            :closable="false"
+          >
+          </el-alert>
+          <el-form ref="form" label-width="80px">
+            <el-form-item label="公司名称">
+              <el-input disabled v-model="companyInfoForm.name"></el-input>
+            </el-form-item>
+            <el-form-item label="公司地址">
+              <el-input
+                disabled
+                v-model="companyInfoForm.companyAddress"
+              ></el-input>
+            </el-form-item>
+            <el-form-item label="公司邮箱">
+              <el-input disabled v-model="companyInfoForm.mailbox"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+              <el-input disabled v-model="companyInfoForm.remarks"></el-input>
+            </el-form-item>
+          </el-form>
+        </el-tab-pane>
       </el-tabs>
     </div>
     <!-- 添加角色对话框 -->
@@ -63,6 +88,7 @@
 
 <script>
 import { getRolesApi, addRolesApi } from '@/api/role'
+import { getCompanyInfo } from '@/api/setting'
 export default {
   data() {
     return {
@@ -84,12 +110,19 @@ export default {
             trigger: 'blur'
           }
         ]
+      },
+      companyInfoForm: {
+        // name: '江苏传智播客教育科技股份有限公司',
+        // companyAddress: '北京市昌平区建材城西路金燕龙办公楼一层',
+        // mailbox: 'bd@itcastcn',
+        // remarks: '传智播客官网-好口碑IT培训机构,一样的教育,不一样的品质'
       }
     }
   },
 
   created() {
     this.getRolesApi()
+    this.getCompanyInfo()
   },
 
   methods: {
@@ -123,9 +156,19 @@ export default {
     dialogClose() {
       this.$refs.form.resetFields()
       this.addRoleForm.description = ''
+    },
+    async getCompanyInfo() {
+      const res = await getCompanyInfo(
+        this.$store.state.user.userInfo.companyId
+      )
+      this.companyInfoForm = res
     }
   }
 }
 </script>
 
-<style scoped lang="less"></style>
+<style scoped lang="scss">
+.el-form {
+  margin-top: 10px;
+}
+</style>
