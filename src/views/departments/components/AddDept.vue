@@ -1,5 +1,10 @@
 <template>
-  <el-dialog title="添加部门" :visible="visible" width="50%" @close="onClose">
+  <el-dialog
+    :title="dialogTitle"
+    :visible="visible"
+    width="50%"
+    @close="onClose"
+  >
     <!-- 表单区域 -->
     <el-form :model="formData" :rules="form" ref="form" label-width="100px">
       <el-form-item label="部门名称" prop="name">
@@ -44,26 +49,49 @@
 </template>
 
 <script>
-import { getDeptsApi, addDeptsApi } from '@/api/departments'
+import {
+  getDeptsApi,
+  addDeptsApi,
+  getDeptByIdApi,
+  editDeptByIdApi
+} from '@/api/departments'
 import { getEmployessApi } from '@/api/employees'
 export default {
   name: 'AddDept',
   data() {
-    const checkDeptName = (rule, value, callback) => {
-      // console.log(this.currrentNode)
-      //1、 判断value 是否 和添加的同级部门是否重复（获取到同级部门）
-      const isRepeat = this.currrentNode.children?.some((item) => {
-        return item.name === value
-      })
-      // 2、如果重复了 callback(new Error('部门重复'))
-      if (isRepeat) return callback(new Error('部门重复'))
-      //3、如果没有重复则callback()
-      callback()
+    const checkDeptName = async (rule, value, callback) => {
+      if (this.formData.id) {
+        const { depts } = await getDeptsApi()
+        const filtersDepts = depts.filter(
+          (item) =>
+            item.pid === this.formData.pid && item.id !== this.formData.id
+        )
+        const isRepeat = filtersDepts.some((item) => {
+          return item.name === value
+        })
+        isRepeat ? callback(new Error('部门重复')) : callback()
+      } else {
+        // console.log(this.currrentNode)
+        //1、 判断value 是否 和添加的同级部门是否重复（获取到同级部门）
+        const isRepeat = this.currrentNode.children?.some((item) => {
+          return item.name === value
+        })
+        // 2、如果重复了 callback(new Error('部门重复'))
+        if (isRepeat) return callback(new Error('部门重复'))
+        //3、如果没有重复则callback()
+        callback()
+      }
     }
     const checkDeptCode = async (rule, value, cb) => {
       const { depts } = await getDeptsApi()
-      // console.log(depts)
-      const isRepeat = depts.some((item) => item.code === value)
+      let isRepeat
+      if (this.formData.id) {
+        isRepeat = depts
+          .filter((item) => item.id !== this.formData.id)
+          .some((item) => item.code === value)
+      } else {
+        isRepeat = depts.some((item) => item.code === value)
+      }
       isRepeat ? cb(new Error('部门编码重复')) : cb()
     }
     return {
@@ -122,15 +150,41 @@ export default {
     //关闭弹窗事件
     onClose() {
       this.$emit('update:visible', false)
+      this.$refs.form.resetFields()
+      this.formData = {
+        name: '',
+        code: '',
+        manager: '',
+        introduce: ''
+      }
     },
     //点击提交事件
     async onSave() {
       await this.$refs.form.validate()
-      this.formData.pid = this.currrentNode.id
-      await addDeptsApi(this.formData)
-      this.$message.success('新增部门成功')
-      this.onClose()
-      this.$emit('addDept')
+      try {
+        if (this.formData.id) {
+          await editDeptByIdApi(this.formData)
+          this.$message.success('修改部门成功')
+          this.onClose()
+          this.$emit('addDept')
+        } else {
+          this.formData.pid = this.currrentNode.id
+          await addDeptsApi(this.formData)
+          this.$message.success('新增部门成功')
+          this.onClose()
+          this.$emit('addDept')
+        }
+      } catch (error) {
+        this.message.error('操作部门失败')
+      }
+    },
+    async getDeptById(id) {
+      this.formData = await getDeptByIdApi(id)
+    }
+  },
+  computed: {
+    dialogTitle() {
+      return this.formData.id ? '编辑部门' : '添加部门'
     }
   }
 }

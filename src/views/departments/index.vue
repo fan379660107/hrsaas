@@ -1,7 +1,7 @@
 <template>
   <div class="dashboard-container">
     <div class="app-container">
-      <el-card class="box-card">
+      <el-card class="box-card" v-loading="loading">
         <!-- 头部 -->
         <treeTools :isRoot="true" :treeNode="compay" @add="showAddDept" />
         <!-- 树形 -->
@@ -11,6 +11,7 @@
               :treeNode="data"
               @remove="getDeptsApi"
               @add="showAddDept"
+              @edit="editShow"
             />
           </template>
         </el-tree>
@@ -22,6 +23,7 @@
       :visible.sync="dialogVisible"
       :currrentNode="currrentNode"
       @addDept="getDeptsApi"
+      ref="editDept"
     />
   </div>
 </template>
@@ -44,7 +46,8 @@ export default {
       ],
       compay: { name: '传智教育', manager: '负责人' },
       dialogVisible: false,
-      currrentNode: {}
+      currrentNode: {},
+      loading: false
     }
   },
 
@@ -53,14 +56,23 @@ export default {
   },
 
   methods: {
+    //获取部门列表
     async getDeptsApi() {
+      this.loading = true
       const res = await getDeptsApi()
       // console.log(res)
       this.treeData = transListToTree(res.depts, '')
+      this.loading = false
     },
+    // 添加功能弹窗
     showAddDept(val) {
       this.dialogVisible = true
       this.currrentNode = val
+    },
+    //编辑功能弹窗
+    editShow(val) {
+      this.dialogVisible = true
+      this.$refs.editDept.getDeptById(val.id)
     }
   },
   components: {

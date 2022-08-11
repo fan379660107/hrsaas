@@ -33,3 +33,24 @@ export const addDeptsApi = (data) =>
     method: 'POST',
     data
   })
+/**
+ * 根据ID查询部门详情
+ * @param {String} id 部门id
+ * @returns promise
+ */
+export const getDeptByIdApi = (id) =>
+  request({
+    url: '/company/department/' + id
+  })
+
+/**
+ * 根据ID修改部门详情
+ * @param {String}
+ * @returns promise
+ */
+export const editDeptByIdApi = (data) =>
+  request({
+    url: '/company/department/' + data.id,
+    method: 'PUT',
+    data
+  })
