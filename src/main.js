@@ -14,7 +14,7 @@ import router from './router'
 
 import '@/icons' // icon
 import '@/permission' // permission control
-import * as directives from './directives'
+
 /**
  * If you don't want to use mock-server
  * you want to use MockJs for mock api
@@ -27,7 +27,17 @@ if (process.env.NODE_ENV === 'production') {
   const { mockXHR } = require('../mock')
   mockXHR()
 }
+//自定义指令
+import * as directives from './directives'
+// 组件
 import components from '@/components'
+//过滤器封装
+import * as filters from '@/filters'
+//统一注册过滤器
+for (let key in filters) {
+  Vue.filter(key, filters[key])
+}
+
 Vue.use(components)
 // set ElementUI lang to EN
 Vue.use(ElementUI, { locale })
@@ -35,7 +45,7 @@ Vue.use(ElementUI, { locale })
 // Vue.use(ElementUI)
 
 Vue.config.productionTip = false
-
+//统一注册自定义指令
 for (let key in directives) {
   Vue.directive(key, directives[key])
 }
