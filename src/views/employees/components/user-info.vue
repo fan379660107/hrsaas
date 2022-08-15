@@ -58,6 +58,7 @@
         <el-col :span="12">
           <el-form-item label="员工头像">
             <!-- 放置上传图片 -->
+            <UploadImg ref="headerImg" @onSuccess="headerImgSuccess" />
           </el-form-item>
         </el-col>
       </el-row>
@@ -93,6 +94,7 @@
 
         <el-form-item label="员工照片">
           <!-- 放置上传图片 -->
+          <UploadImg ref="employeesPic" @onSuccess="employeesPicSuccess" />
         </el-form-item>
         <el-form-item label="国家/地区">
           <el-select v-model="formData.nationalArea" class="inputW2">
@@ -394,6 +396,7 @@ import EmployeeEnum from '@/constant/employees'
 import { getUserDetail, saveUserDetailById } from '@/api/user'
 import { getPersonalDetail, updatePersonal } from '@/api/employees'
 export default {
+  name: 'userInfo',
   data() {
     return {
       userId: this.$route.params.id,
@@ -467,17 +470,37 @@ export default {
   methods: {
     async getUserDetail() {
       this.userInfo = await getUserDetail(this.userId)
+      this.$refs.headerImg.fileList.push({
+        url: this.userInfo.staffPhoto
+      })
     },
     async getPersonalDetail() {
       this.formData = await getPersonalDetail(this.userId)
+      this.$refs.employeesPic.fileList.push({
+        url: this.formData.staffPhoto
+      })
     },
     async onSaveUserDetail() {
+      if (this.$refs.headerImg.loading) {
+        return this.$message.error('头像正在上传')
+      }
       await saveUserDetailById(this.userInfo)
       this.$message.success('更新成功')
     },
     async onUpdatePersonal() {
+      if (this.$refs.employeesPic.loading) {
+        return this.$message.error('头像正在上传')
+      }
       await updatePersonal(this.formData)
       this.$message.success('更新成功')
+    },
+    //监听员工头像上传成功
+    headerImgSuccess({ url }) {
+      this.userInfo.staffPhoto = url
+    },
+    // 监听员工照片
+    employeesPicSuccess({ url }) {
+      this.formData.staffPhoto = url
     }
   },
   created() {
