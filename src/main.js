@@ -33,6 +33,10 @@ import * as directives from './directives'
 import components from '@/components'
 //过滤器封装
 import * as filters from '@/filters'
+
+// 打印自定义指令全局注册
+import Print from 'vue-print-nb'
+Vue.use(Print)
 //统一注册过滤器
 for (let key in filters) {
   Vue.filter(key, filters[key])
