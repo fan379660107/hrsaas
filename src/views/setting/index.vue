@@ -13,9 +13,11 @@
             <el-table-column prop="description" label="描述"> </el-table-column>
             <el-table-column prop="address" label="操作">
               <template>
-                <el-button size="small" type="success">成功按钮</el-button>
-                <el-button size="small" type="primary">主要按钮</el-button>
-                <el-button size="small" type="danger">危险按钮</el-button>
+                <el-button size="small" type="success" @click="permissionsClick"
+                  >分配权限</el-button
+                >
+                <el-button size="small" type="primary">编辑</el-button>
+                <el-button size="small" type="danger">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -83,13 +85,35 @@
         <el-button type="primary" @click="addRole">确 定</el-button>
       </span>
     </el-dialog>
+    <!-- 给角色分配权限 -->
+    <el-dialog
+      title="给角色分配权限"
+      :visible.sync="setRightDialog"
+      width="50%"
+    >
+      <el-tree
+        default-expand-all
+        :data="permissions"
+        :props="{ label: 'name' }"
+        show-checkbox
+        :default-checked-keys="defaultCheckedKeys"
+        node-key="id"
+      ></el-tree>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="setRightDialog = false">取 消</el-button>
+        <el-button type="primary">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
 <script>
 import { getRolesApi, addRolesApi } from '@/api/role'
 import { getCompanyInfo } from '@/api/setting'
+import { getPermissionList } from '@/api/permisson'
+import { transListToTree } from '@/utils'
 export default {
+  name: 'Setting',
   data() {
     return {
       activeName: 'first',
@@ -116,13 +140,17 @@ export default {
         // companyAddress: '北京市昌平区建材城西路金燕龙办公楼一层',
         // mailbox: 'bd@itcastcn',
         // remarks: '传智播客官网-好口碑IT培训机构,一样的教育,不一样的品质'
-      }
+      },
+      setRightDialog: false, //给角色分配权限
+      permissions: [], //权限树形数据
+      defaultCheckedKeys: ['1', '1063313020819738624'] //分配权限
     }
   },
 
   created() {
     this.getRolesApi()
     this.getCompanyInfo()
+    this.getPermissionList()
   },
 
   methods: {
@@ -162,6 +190,14 @@ export default {
         this.$store.state.user.userInfo.companyId
       )
       this.companyInfoForm = res
+    },
+    permissionsClick() {
+      this.setRightDialog = true
+    },
+    async getPermissionList() {
+      const res = await getPermissionList()
+      const treePermission = transListToTree(res, '0')
+      this.permissions = treePermission
     }
   }
 }

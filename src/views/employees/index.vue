@@ -74,7 +74,9 @@
               <el-button type="text" size="small">转正</el-button>
               <el-button type="text" size="small">调岗</el-button>
               <el-button type="text" size="small">离职</el-button>
-              <el-button type="text" size="small">角色</el-button>
+              <el-button type="text" size="small" @click="roleClick(row.id)"
+                >角色</el-button
+              >
               <el-button type="text" size="small" @click="delFn(row.id)"
                 >删除</el-button
               >
@@ -107,6 +109,11 @@
     <el-dialog title="头像二维码" :visible.sync="visible">
       <canvas id="canvas" />
     </el-dialog>
+    <!-- 分配角色 -->
+    <AssignRole
+      :visible.sync="isShowVisible"
+      :employessId="currentEmployessId"
+    />
   </div>
 </template>
 
@@ -114,6 +121,7 @@
 import { getEmployessInfoApi, delEmployee } from '@/api/employees'
 import employees from '@/constant/employees'
 import AddEmployees from './components/addEmployees.vue'
+import AssignRole from './components/assign-role.vue'
 const { exportExcelMapPath, hireType } = employees
 import QRcode from 'qrcode'
 export default {
@@ -126,7 +134,9 @@ export default {
       loading: false,
       total: 0,
       showEmployees: false,
-      visible: false
+      visible: false,
+      isShowVisible: false,
+      currentEmployessId: ''
     }
   },
 
@@ -134,7 +144,8 @@ export default {
     this.getEmployessInfoApi()
   },
   components: {
-    AddEmployees
+    AddEmployees,
+    AssignRole
   },
 
   methods: {
@@ -203,6 +214,10 @@ export default {
         const canvas = document.getElementById('canvas')
         QRcode.toCanvas(canvas, val)
       })
+    },
+    roleClick(id) {
+      this.isShowVisible = true
+      this.currentEmployessId = id
     }
   }
 }
