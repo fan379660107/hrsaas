@@ -66,13 +66,13 @@ export const constantRoutes = [
         meta: { title: '首页', icon: 'dashboard' }
       }
     ]
-  },
+  }
 
   // 404 page must be placed at the end !!!
-  { path: '*', redirect: '/404', hidden: true }
+  // { path: '*', redirect: '/404', hidden: true }
 ]
 //动态路由 基于后端返回的用户权限对动态路由进行筛选
-const asyncRoutes = [
+export const asyncRoutes = [
   approvalsRouter,
   departmentsRouter,
   employeesRouter,
@@ -87,7 +87,7 @@ const createRouter = () =>
   new Router({
     // mode: 'history', // require service support
     scrollBehavior: () => ({ y: 0 }),
-    routes: [...constantRoutes, ...asyncRoutes] //路由规则
+    routes: [...constantRoutes] //路由规则
   })
 
 const router = createRouter()

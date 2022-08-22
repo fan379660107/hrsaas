@@ -1,5 +1,6 @@
 // 参数1：自定义指令的名字:不需要加+v-
 //参数2:是配置对象
+import store from '@/store'
 export const imgError = {
   //当绑定的元素插入到DOM 中时....
   inserted(el, { value }) {
@@ -30,4 +31,12 @@ export const aa = {
 }
 export const bb = {
   inserted() {}
+}
+export const isHas = {
+  inserted(el, binding) {
+    const has = store.state.permission.points.includes(binding.value)
+    if (!has) {
+      el.remove()
+    }
+  }
 }
