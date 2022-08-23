@@ -3,10 +3,11 @@ export default {
   path: '/employees',
   component: Layout,
   meta: {
-    id: 'employees'
+    id: 'employees' // 用来和后端权限做约定的
   },
   children: [
     {
+      name: 'employees',
       path: '',
       component: () => import('@/views/employees'),
       meta: { title: '员工', icon: 'people' }
@@ -14,6 +15,7 @@ export default {
     {
       path: 'detail/:id',
       component: () => import('@/views/employees/detail'),
+      props: true,
       hidden: true
     },
     {
