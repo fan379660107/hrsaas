@@ -24,7 +24,7 @@ module.exports = {
    * In most cases please use '/' !!!
    * Detail: https://cli.vuejs.org/config/#publicpath
    */
-  publicPath: '/',
+  publicPath: './',
   outputDir: 'dist',
   assetsDir: 'static',
   lintOnSave: false,
@@ -50,6 +50,17 @@ module.exports = {
       alias: {
         '@': resolve('src')
       }
+    },
+    // 排除 elementUI xlsx  和 vue
+    externals: {
+      //key: 包名
+      //去window查找寻找忽略打包的（vue、xlsx）等
+      //或略打包只能忽略js包
+      echarts: 'echarts',
+      'element-ui': 'ELEMENT',
+      vue: 'Vue',
+      xlsx: 'XLSX',
+      'cos-js-sdk-v5': 'COS'
     }
   },
   chainWebpack(config) {
